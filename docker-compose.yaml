@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  train:
+    build:
+      context: .  # Define the context as the current directory
+    container_name: train_container
+    command: bash -c "chmod 600 /root/.kaggle/kaggle.json /root/.config/kaggle/kaggle.json && python train.py"
+    shm_size: '2gb'  # Increase shared memory to 2GB
+    volumes:
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master:/app"  # Mount the project directory
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master/kaggle.json:/root/.kaggle/kaggle.json"  # Mount kaggle.json to the default location
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master/kaggle.json:/root/.config/kaggle/kaggle.json"  # Also mount kaggle.json to the alternative location
+    working_dir: /app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  eval:
+    build:
+      context: .
+    container_name: eval_container
+    command: bash -c "chmod 600 /root/.kaggle/kaggle.json /root/.config/kaggle/kaggle.json && python eval.py --ckpt_path /app/src/checkpoints/model_checkpoint.ckpt"
+    shm_size: '2gb'  # Increase shared memory to 2GB
+    volumes:
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master:/app"
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master/kaggle.json:/root/.kaggle/kaggle.json"
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master/kaggle.json:/root/.config/kaggle/kaggle.json"
+    working_dir: /app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  infer:
+    build:
+      context: .
+    container_name: infer_container
+    command: bash -c "chmod 600 /root/.kaggle/kaggle.json /root/.config/kaggle/kaggle.json && python infer.py --ckpt_path /app/src/checkpoints/model_checkpoint.ckpt"
+    shm_size: '2gb'  # Increase shared memory to 2GB
+    volumes:
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master:/app"
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master/kaggle.json:/root/.kaggle/kaggle.json"
+      - "D:/lightning-template-hydra-master/lightning-template-hydra-master/kaggle.json:/root/.config/kaggle/kaggle.json"
+    working_dir: /app/src
+    environment:
+      - PYTHONUNBUFFERED=1
